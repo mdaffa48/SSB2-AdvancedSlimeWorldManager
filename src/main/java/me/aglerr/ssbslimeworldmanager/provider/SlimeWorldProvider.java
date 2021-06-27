@@ -17,8 +17,8 @@ public class SlimeWorldProvider implements WorldsProvider {
     private final SlimeUtils slimeUtils;
     private final TaskManager taskManager;
     public SlimeWorldProvider(TaskManager taskManager, SlimeUtils slimeUtils){
-        this.slimeUtils = slimeUtils
-        this.taskManager = taskManager
+        this.slimeUtils = slimeUtils;
+        this.taskManager = taskManager;
     }
 
     @Override
