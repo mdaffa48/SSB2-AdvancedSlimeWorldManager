@@ -3,7 +3,6 @@ package me.aglerr.ssbslimeworldmanager.provider;
 import com.bgsoftware.superiorskyblock.api.hooks.WorldsProvider;
 import com.bgsoftware.superiorskyblock.api.island.Island;
 import com.grinderwolf.swm.api.world.SlimeWorld;
-import me.aglerr.ssbslimeworldmanager.SSBSlimeWorldManager;
 import me.aglerr.ssbslimeworldmanager.tasks.TaskManager;
 import me.aglerr.ssbslimeworldmanager.utils.SlimeUtils;
 import org.bukkit.Bukkit;
