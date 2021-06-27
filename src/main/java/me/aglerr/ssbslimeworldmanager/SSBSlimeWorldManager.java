@@ -13,9 +13,18 @@ public final class SSBSlimeWorldManager extends JavaPlugin {
     private final SlimeUtils slimeUtils = new SlimeUtils(this);
     private final TaskManager taskManager = new TaskManager(this);
 
+    public static String FILE_TYPE;
+
     @Override
     public void onEnable() {
+        // Initialize config.yml
+        this.saveDefaultConfig();
+        this.getConfig().options().copyDefaults(true);
+        // Initialize file type
+        FILE_TYPE = this.getConfig().getString("file-type");
+        // Initialize the slime utils
         this.slimeUtils.initialize();
+        // Register listener
         this.registerListeners();
     }
 

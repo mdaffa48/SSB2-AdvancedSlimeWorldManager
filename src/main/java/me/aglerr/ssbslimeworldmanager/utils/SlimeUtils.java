@@ -35,7 +35,8 @@ public final class SlimeUtils {
 
     public void initialize(){
         this.slimePlugin = (SlimePlugin) Bukkit.getPluginManager().getPlugin("SlimeWorldManager");
-        this.slimeLoader = slimePlugin.getLoader("file");
+        String finalFileType = SSBSlimeWorldManager.FILE_TYPE == null ? "file" : SSBSlimeWorldManager.FILE_TYPE;
+        this.slimeLoader = slimePlugin.getLoader(finalFileType);
     }
 
     public void unloadAllWorlds(){

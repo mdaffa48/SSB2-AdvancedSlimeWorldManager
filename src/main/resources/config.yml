@@ -1,0 +1,8 @@
+# Available file types:
+# - file
+# - mysql
+# - mongodb
+# - redis
+# You need to put the host, login info, etc. on the SlimeWorldManager configuration
+# You must restart the server after you've changed it!
+file-type: "file"
