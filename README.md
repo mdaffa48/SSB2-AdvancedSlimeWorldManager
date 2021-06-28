@@ -18,4 +18,5 @@ These notes and found issues might be changed at anytime, so keep your eyes on t
 ## Found Issues
 <ul>
   <li>Issues when trying to disband/delete the island - v1.0.1</li>
+  <li>Disbanding the island doesn't removed the world - v1.0.1</li>
 <ul>
