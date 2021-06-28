@@ -5,8 +5,6 @@ import com.bgsoftware.superiorskyblock.api.island.Island;
 
 import com.grinderwolf.swm.api.SlimePlugin;
 import com.grinderwolf.swm.api.loaders.SlimeLoader;
-import com.grinderwolf.swm.api.world.SlimeChunk;
-import com.grinderwolf.swm.api.world.SlimeChunkSection;
 import com.grinderwolf.swm.api.world.SlimeWorld;
 import com.grinderwolf.swm.api.world.properties.SlimeProperties;
 import com.grinderwolf.swm.api.world.properties.SlimePropertyMap;
@@ -18,8 +16,6 @@ import org.bukkit.World;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Future;
 
 public final class SlimeUtils {
 
@@ -27,11 +23,6 @@ public final class SlimeUtils {
 
     private SlimePlugin slimePlugin;
     private SlimeLoader slimeLoader;
-
-    private final SSBSlimeWorldManager plugin;
-    public SlimeUtils(SSBSlimeWorldManager plugin){
-        this.plugin = plugin;
-    }
 
     public void initialize(){
         this.slimePlugin = (SlimePlugin) Bukkit.getPluginManager().getPlugin("SlimeWorldManager");
@@ -41,7 +32,7 @@ public final class SlimeUtils {
 
     public void unloadAllWorlds(){
         try{
-            this.slimeLoader.listWorlds().forEach(worldName -> {
+            this.islandWorlds.keySet().forEach(worldName -> {
                 if(this.isIslandsWorld(worldName) && Bukkit.getWorld(worldName) != null)
                     this.unloadWorld(worldName);
             });
@@ -60,27 +51,28 @@ public final class SlimeUtils {
 
     public SlimeWorld loadAndGetWorld(String worldName, World.Environment environment){
         SlimeWorld slimeWorld = this.islandWorlds.get(worldName);
-        if(slimeWorld == null){
-            try {
-                if(this.slimeLoader.worldExists(worldName)){
-                    slimeWorld = this.slimePlugin.loadWorld(this.slimeLoader, worldName, false, this.defaultSlimePropertyMap(environment));
-                } else {
-                    slimeWorld = this.slimePlugin.createEmptyWorld(this.slimeLoader, worldName, false, this.defaultSlimePropertyMap(environment));
-                }
-                this.islandWorlds.put(worldName, slimeWorld);
-            }catch (Exception ex){
-                throw new RuntimeException(ex);
+
+        if(slimeWorld != null){
+            return slimeWorld;
+        }
+        try{
+            if(this.slimeLoader.worldExists(worldName)){
+                slimeWorld = this.slimePlugin.loadWorld(this.slimeLoader, worldName, false, this.defaultSlimePropertyMap());
+            } else {
+                slimeWorld = this.slimePlugin.createEmptyWorld(this.slimeLoader, worldName, false, this.defaultSlimePropertyMap());
             }
+        } catch (Exception ex){
+            throw new RuntimeException(ex);
         }
         if(Bukkit.getWorld(worldName) == null){
             this.slimePlugin.generateWorld(slimeWorld);
         }
+        this.islandWorlds.put(worldName, slimeWorld);
         return slimeWorld;
     }
 
-    public void deleteWorld(Island island, World.Environment environment){
-        String worldName = getWorldName(island, environment);
-        this.unloadWorld(worldName);
+    public void deleteWorld(Island island){
+        String worldName = this.getWorldName(island, World.Environment.NORMAL);
         try {
             this.slimeLoader.deleteWorld(worldName);
         }catch (Exception ex){
@@ -129,11 +121,18 @@ public final class SlimeUtils {
         }
     }
 
-    private SlimePropertyMap defaultSlimePropertyMap(World.Environment environment){
+    public SlimePropertyMap defaultSlimePropertyMap(){
         SlimePropertyMap slimePropertyMap = new SlimePropertyMap();
         slimePropertyMap.setValue(SlimeProperties.DIFFICULTY, "normal");
-        slimePropertyMap.setValue(SlimeProperties.ENVIRONMENT, environment.name().toLowerCase());
+        slimePropertyMap.setValue(SlimeProperties.ENVIRONMENT, World.Environment.NORMAL.name());
         return slimePropertyMap;
     }
 
+    public SlimeLoader getSlimeLoader() {
+        return slimeLoader;
+    }
+
+    public SlimePlugin getSlimePlugin() {
+        return slimePlugin;
+    }
 }
