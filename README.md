@@ -1,5 +1,5 @@
 # SSB2-AdvancedSlimeWorldManager
-SuperiorSkyblock2 addon that adds support for Advanced SlimeWorldManager
+Advanced-SlimeWorldManager add-on for SuperiorSkyblock2
 
 Special thanks to Ome_R<br>
 Original Resource: https://github.com/BG-Software-LLC/SSB-SlimeWorldManager<br>
