@@ -42,37 +42,42 @@ public final class SlimeUtils {
     }
 
     public SlimeWorld loadAndGetWorld(Island island, World.Environment environment){
-        return this.loadAndGetWorld(island.getUniqueId(), environment);
+        return loadAndGetWorld(island.getUniqueId(), environment);
     }
 
     public SlimeWorld loadAndGetWorld(UUID islandUUID, World.Environment environment){
-        return this.loadAndGetWorld(getWorldName(islandUUID, environment), environment);
+        return loadAndGetWorld(getWorldName(islandUUID, environment), environment);
     }
 
     public SlimeWorld loadAndGetWorld(String worldName, World.Environment environment){
-        SlimeWorld slimeWorld = this.islandWorlds.get(worldName);
-
-        if(slimeWorld != null){
-            return slimeWorld;
-        }
-        try{
-            if(this.slimeLoader.worldExists(worldName)){
-                slimeWorld = this.slimePlugin.loadWorld(this.slimeLoader, worldName, false, this.defaultSlimePropertyMap());
-            } else {
-                slimeWorld = this.slimePlugin.createEmptyWorld(this.slimeLoader, worldName, false, this.defaultSlimePropertyMap());
+        SlimeWorld slimeWorld = islandWorlds.get(worldName);
+        // If the slime world is not cached
+        if(slimeWorld == null){
+            // Try to create or load the world
+            try {
+                // World was found, load the world and cached it
+                if (slimeLoader.worldExists(worldName)) {
+                    slimeWorld = slimePlugin.loadWorld(slimeLoader, worldName, false, defaultSlimePropertyMap(environment));
+                    // If there is no world, create the world
+                } else {
+                    slimeWorld = slimePlugin.createEmptyWorld(slimeLoader, worldName, false, defaultSlimePropertyMap(environment));
+                }
+                // Put the world to the cache
+                islandWorlds.put(worldName, slimeWorld);
+            }catch (Exception ex){
+                throw new RuntimeException(ex);
             }
-        } catch (Exception ex){
-            throw new RuntimeException(ex);
         }
+        // If there is no world with that name, generate the world
         if(Bukkit.getWorld(worldName) == null){
-            this.slimePlugin.generateWorld(slimeWorld);
+            slimePlugin.generateWorld(slimeWorld);
         }
-        this.islandWorlds.put(worldName, slimeWorld);
+        // Return the desired world
         return slimeWorld;
     }
 
-    public void deleteWorld(Island island){
-        String worldName = this.getWorldName(island, World.Environment.NORMAL);
+    public void deleteWorld(Island island, World.Environment environment){
+        String worldName = this.getWorldName(island, environment);
         try {
             this.slimeLoader.deleteWorld(worldName);
         }catch (Exception ex){
@@ -121,18 +126,10 @@ public final class SlimeUtils {
         }
     }
 
-    public SlimePropertyMap defaultSlimePropertyMap(){
+    public SlimePropertyMap defaultSlimePropertyMap(World.Environment environment){
         SlimePropertyMap slimePropertyMap = new SlimePropertyMap();
         slimePropertyMap.setValue(SlimeProperties.DIFFICULTY, "normal");
-        slimePropertyMap.setValue(SlimeProperties.ENVIRONMENT, World.Environment.NORMAL.name());
+        slimePropertyMap.setValue(SlimeProperties.ENVIRONMENT, environment.name());
         return slimePropertyMap;
-    }
-
-    public SlimeLoader getSlimeLoader() {
-        return slimeLoader;
-    }
-
-    public SlimePlugin getSlimePlugin() {
-        return slimePlugin;
     }
 }
