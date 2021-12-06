@@ -1,7 +1,7 @@
 package me.aglerr.ssbslimeworldmanager;
 
 import me.aglerr.ssbslimeworldmanager.listeners.SuperiorListener;
-import me.aglerr.ssbslimeworldmanager.managers.TaskManager;
+import me.aglerr.ssbslimeworldmanager.tasks.TaskManager;
 import me.aglerr.ssbslimeworldmanager.utils.SlimeUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginManager;
@@ -12,17 +12,15 @@ public final class SSBSlimeWorldManager extends JavaPlugin {
     private final SlimeUtils slimeUtils = new SlimeUtils();
     private final TaskManager taskManager = new TaskManager(this);
 
-    public static String FILE_TYPE;
-
     @Override
     public void onEnable() {
         // Initialize config.yml
         this.saveDefaultConfig();
         this.getConfig().options().copyDefaults(true);
-        // Initialize file type
-        FILE_TYPE = this.getConfig().getString("file-type");
+        // Initialize config values
+        ConfigValue.initialize(this.getConfig());
         // Initialize the slime utils
-        this.slimeUtils.initialize();
+        this.slimeUtils.initialize(taskManager);
         // Register listener
         this.registerListeners();
     }

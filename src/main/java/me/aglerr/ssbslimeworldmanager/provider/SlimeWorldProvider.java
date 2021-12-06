@@ -1,9 +1,11 @@
 package me.aglerr.ssbslimeworldmanager.provider;
 
+import com.bgsoftware.superiorskyblock.api.SuperiorSkyblockAPI;
 import com.bgsoftware.superiorskyblock.api.hooks.WorldsProvider;
 import com.bgsoftware.superiorskyblock.api.island.Island;
 import com.grinderwolf.swm.api.world.SlimeWorld;
-import me.aglerr.ssbslimeworldmanager.managers.TaskManager;
+import me.aglerr.ssbslimeworldmanager.ConfigValue;
+import me.aglerr.ssbslimeworldmanager.tasks.TaskManager;
 import me.aglerr.ssbslimeworldmanager.utils.SlimeUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -59,30 +61,30 @@ public class SlimeWorldProvider implements WorldsProvider {
     }
 
     public boolean isNormalEnabled(){
-        return true;
+        return ConfigValue.NORMAL_ENABLED;
     }
 
     public boolean isNormalUnlocked(){
-        return true;
+        return ConfigValue.NORMAL_UNLOCKED;
     }
 
     @Override
     public boolean isNetherEnabled() {
-        return true;
+        return ConfigValue.NETHER_ENABLED;
     }
 
     @Override
     public boolean isNetherUnlocked() {
-        return false;
+        return ConfigValue.NETHER_UNLOCKED;
     }
 
     @Override
     public boolean isEndEnabled() {
-        return true;
+        return ConfigValue.END_ENABLED;
     }
 
     @Override
     public boolean isEndUnlocked() {
-        return false;
+        return ConfigValue.END_UNLOCKED;
     }
 }

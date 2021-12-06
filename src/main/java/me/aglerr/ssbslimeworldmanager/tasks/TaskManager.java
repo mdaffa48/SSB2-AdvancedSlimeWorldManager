@@ -1,7 +1,6 @@
-package me.aglerr.ssbslimeworldmanager.managers;
+package me.aglerr.ssbslimeworldmanager.tasks;
 
 import me.aglerr.ssbslimeworldmanager.SSBSlimeWorldManager;
-import me.aglerr.ssbslimeworldmanager.tasks.WorldUnloadTask;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -16,7 +15,7 @@ public class TaskManager {
     private final Map<String, WorldUnloadTask> worldTasks = new ConcurrentHashMap<>();
 
     public WorldUnloadTask putAndGetTask(String worldName){
-        return this.worldTasks.computeIfAbsent(worldName, v -> new WorldUnloadTask(plugin, worldName));
+        return worldTasks.computeIfAbsent(worldName, w -> new WorldUnloadTask(plugin, worldName));
     }
 
     public void stopTask(String worldName){

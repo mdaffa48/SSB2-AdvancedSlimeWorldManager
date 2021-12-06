@@ -1,6 +1,7 @@
 me\aglerr\ssbslimeworldmanager\listeners\SuperiorListener.class
 me\aglerr\ssbslimeworldmanager\utils\SlimeUtils.class
 me\aglerr\ssbslimeworldmanager\SSBSlimeWorldManager.class
-me\aglerr\ssbslimeworldmanager\managers\TaskManager.class
 me\aglerr\ssbslimeworldmanager\provider\SlimeWorldProvider.class
+me\aglerr\ssbslimeworldmanager\ConfigValue.class
+me\aglerr\ssbslimeworldmanager\tasks\TaskManager.class
 me\aglerr\ssbslimeworldmanager\tasks\WorldUnloadTask.class

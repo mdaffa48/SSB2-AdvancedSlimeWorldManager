@@ -8,14 +8,15 @@ import com.grinderwolf.swm.api.loaders.SlimeLoader;
 import com.grinderwolf.swm.api.world.SlimeWorld;
 import com.grinderwolf.swm.api.world.properties.SlimeProperties;
 import com.grinderwolf.swm.api.world.properties.SlimePropertyMap;
+import com.grinderwolf.swm.internal.com.mongodb.lang.Nullable;
 import com.grinderwolf.swm.nms.CraftSlimeWorld;
+import me.aglerr.ssbslimeworldmanager.ConfigValue;
 import me.aglerr.ssbslimeworldmanager.SSBSlimeWorldManager;
+import me.aglerr.ssbslimeworldmanager.tasks.TaskManager;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 public final class SlimeUtils {
 
@@ -23,18 +24,20 @@ public final class SlimeUtils {
 
     private SlimePlugin slimePlugin;
     private SlimeLoader slimeLoader;
+    private TaskManager taskManager;
 
-    public void initialize(){
+    public void initialize(TaskManager taskManager){
         this.slimePlugin = (SlimePlugin) Bukkit.getPluginManager().getPlugin("SlimeWorldManager");
-        String finalFileType = SSBSlimeWorldManager.FILE_TYPE == null ? "file" : SSBSlimeWorldManager.FILE_TYPE;
-        this.slimeLoader = slimePlugin.getLoader(finalFileType);
+        this.slimeLoader = slimePlugin.getLoader(ConfigValue.FILE_TYPE);
+        this.taskManager = taskManager;
     }
 
     public void unloadAllWorlds(){
         try{
             this.islandWorlds.keySet().forEach(worldName -> {
-                if(this.isIslandsWorld(worldName) && Bukkit.getWorld(worldName) != null)
+                if(this.isIslandsWorld(worldName) && Bukkit.getWorld(worldName) != null){
                     this.unloadWorld(worldName);
+                }
             });
         } catch (Exception ex){
             ex.printStackTrace();
@@ -57,15 +60,15 @@ public final class SlimeUtils {
             try {
                 // World was found, load the world and cached it
                 if (slimeLoader.worldExists(worldName)) {
-                    slimeWorld = slimePlugin.loadWorld(slimeLoader, worldName, false, defaultSlimePropertyMap(environment));
-                    // If there is no world, create the world
+                    slimeWorld = slimePlugin.loadWorld(slimeLoader, worldName, false, slimePropertyMap(environment));
                 } else {
-                    slimeWorld = slimePlugin.createEmptyWorld(slimeLoader, worldName, false, defaultSlimePropertyMap(environment));
+                    // If there is no world, create the world
+                    slimeWorld = slimePlugin.createEmptyWorld(slimeLoader, worldName, false, slimePropertyMap(environment));
                 }
                 // Put the world to the cache
                 islandWorlds.put(worldName, slimeWorld);
             }catch (Exception ex){
-                throw new RuntimeException(ex);
+                ex.printStackTrace();
             }
         }
         // If there is no world with that name, generate the world
@@ -78,8 +81,13 @@ public final class SlimeUtils {
 
     public void deleteWorld(Island island, World.Environment environment){
         String worldName = this.getWorldName(island, environment);
+        if(islandWorlds.get(worldName) == null){
+            return;
+        }
         try {
             this.slimeLoader.deleteWorld(worldName);
+            this.islandWorlds.remove(worldName);
+            this.taskManager.stopTask(worldName);
         }catch (Exception ex){
             ex.printStackTrace();
         }
@@ -95,7 +103,7 @@ public final class SlimeUtils {
     }
 
     public void unloadWorld(String worldName){
-        SlimeWorld slimeWorld = this.islandWorlds.remove(worldName);
+        SlimeWorld slimeWorld = this.islandWorlds.get(worldName);
         if(slimeWorld != null){
             try{
                 byte[] serializedWorld = ((CraftSlimeWorld) slimeWorld).serialize();
@@ -104,7 +112,9 @@ public final class SlimeUtils {
                 ex.printStackTrace();
             }
         }
-        Bukkit.unloadWorld(worldName, true);
+        if(Bukkit.getWorld(worldName) != null){
+            Bukkit.unloadWorld(worldName, true);
+        }
     }
 
     public String getWorldName(Island island, World.Environment environment){
@@ -126,7 +136,31 @@ public final class SlimeUtils {
         }
     }
 
-    public SlimePropertyMap defaultSlimePropertyMap(World.Environment environment){
+    private SlimeWorld asyncLoadWorld(String worldName, World.Environment environment){
+        final SlimeWorld[] slimeWorlds = new SlimeWorld[1];
+        slimePlugin.asyncLoadWorld(slimeLoader, worldName, false, slimePropertyMap(environment)).thenAccept(world -> {
+            if(world.isEmpty()){
+                // Do something else
+                throw new IllegalStateException("Failed to load world (" + worldName + ") on environment " + environment.name());
+            }
+            slimeWorlds[0] = world.get();
+        });
+        return slimeWorlds[0];
+    }
+
+    private SlimeWorld asyncCreateEmptyWorld(String worldName, World.Environment environment){
+        final SlimeWorld[] slimeWorlds = new SlimeWorld[1];
+        slimePlugin.asyncCreateEmptyWorld(slimeLoader, worldName, false, slimePropertyMap(environment)).thenAcceptAsync(world -> {
+            if(world.isEmpty()){
+                // Do something else
+                throw new IllegalStateException("Failed to create an empty world (" + worldName + ") on environment " + environment.name());
+            }
+            slimeWorlds[0] = world.get();
+        });
+        return slimeWorlds[0];
+    }
+
+    public SlimePropertyMap slimePropertyMap(World.Environment environment){
         SlimePropertyMap slimePropertyMap = new SlimePropertyMap();
         slimePropertyMap.setValue(SlimeProperties.DIFFICULTY, "normal");
         slimePropertyMap.setValue(SlimeProperties.ENVIRONMENT, environment.name());

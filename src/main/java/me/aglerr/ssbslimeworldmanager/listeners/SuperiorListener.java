@@ -32,7 +32,9 @@ public class SuperiorListener implements Listener {
     public void onIslandDelete(IslandDisbandEvent event){
         SlimeUtils slimeUtils = plugin.getSlimeUtils();
         // Delete all island worlds
-        Arrays.stream(World.Environment.values()).forEach(environment -> slimeUtils.deleteWorld(event.getIsland(), environment));
+        for (World.Environment environment : World.Environment.values()) {
+            slimeUtils.deleteWorld(event.getIsland(), environment);
+        }
     }
 
 }

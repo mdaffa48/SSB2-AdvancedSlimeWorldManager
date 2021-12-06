@@ -6,3 +6,14 @@
 # You need to put the host, login info, etc. on the SlimeWorldManager configuration
 # You must restart the server after you've changed it!
 file-type: "file"
+
+worlds:
+  normal:
+    enabled: true
+    unlock: true
+  nether:
+    enabled: true
+    unlock: true
+  end:
+    enabled: true
+    unlock: false

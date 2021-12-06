@@ -1,7 +1,6 @@
 package me.aglerr.ssbslimeworldmanager.tasks;
 
 import me.aglerr.ssbslimeworldmanager.SSBSlimeWorldManager;
-import me.aglerr.ssbslimeworldmanager.managers.TaskManager;
 import me.aglerr.ssbslimeworldmanager.utils.SlimeUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
