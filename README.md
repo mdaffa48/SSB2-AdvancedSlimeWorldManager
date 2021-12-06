@@ -5,4 +5,4 @@ Special thanks to Ome_R<br>
 Original Resource: https://github.com/BG-Software-LLC/SSB-SlimeWorldManager<br>
 Advanced SlimeWorldManager: https://github.com/Paul19988/Advanced-Slime-World-Manager
 <br>
-<img src="https://i.imgur.com/K1M5ZYg.png"
+<img src="https://i.imgur.com/K1M5ZYg.png">
