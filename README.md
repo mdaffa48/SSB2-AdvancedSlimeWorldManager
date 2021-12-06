@@ -13,6 +13,7 @@ These notes and found issues might be changed at anytime, so keep your eyes on t
 <ul>
   <li>This add-on is now works but needs some serious testing - v1.0.0</li>
   <li>Successfully added config to set the file types - v1.0.1 (issues: 1)</li>
+  <li>No errors found and issues on the previous version has been fixed - v1.0.3</li>
 </ul>
 
 ## Found Issues
